@@ -37,7 +37,7 @@ def get_time_for_moving(file_name):
                     time_for_moving[name] = vr
     return time_for_moving
 
-def get_data_from_billing(file_name, days):
+def get_data_from_billing(file_name):
     mas = load_sheet(file_name, "Тарификация")
     # Классы
     class_list = mas[0][2:-4]
@@ -93,4 +93,22 @@ def get_data_from_billing(file_name, days):
                                                 "Уроки по группам": {"Значение": True if row[-2].lower() == "да" else False, "Исключения": exceptions_lesson_by_groups}}
         info_about_teachers_subjects["Предметы"] = info_about_subjects
         info_about_teachers[name] = info_about_teachers_subjects # Добавить кабинеты
+    mas_teacher = load_sheet(file_name, "Учителя")
+    teachers_list = [i[0] for i in mas_teacher[1:-1]]
+    for row in mas_teacher[1:]:
+        print(row)
+        info_about_teachers[row[0]]["Кабинет"] = row[1]
+        for i in range(2, 7):
+            if "(" in row[i]:
+                pass
+            elif ";" in row[i]:
+                s = row[i].split("; ")
+                vr_mas = []
+                for limit in s:
+                    vr_mas.append(limit.split(", "))
+                info_about_teachers[row[0]][mas_teacher[0][i]] = (int(vr_mas[0]), vr_mas[1])
+    print(info_about_teachers["Андрюшевич М.С."])
+    mas_auditorium = load_sheet(file_name, "Кабинеты")
     return info_about_classes, info_about_teachers
+
+a = get_data_from_billing("5E22B510.xlsx")
